@@ -1,0 +1,94 @@
+# This workflow builds, tests and releases an Picroft Stable binary image for Raspberry Pi
+
+name: CI build
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
+on:
+  push:
+    branches: [ main ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # Build binary images
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    # Skip build if the commit message includes the string '[skip ci]'
+    if: "! contains(github.event.head_commit.message, '[skip ci]')"
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Get the version (git tag)
+        id: get_version
+        run: |
+          echo ${GITHUB_REF/refs\/tags\//}
+          echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      - name: Install pi-gen required dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update --fix-missing
+          sudo apt-get install -y coreutils quilt parted debootstrap zerofree zip dosfstools libarchive-tools libcap2-bin grep rsync xz-utils file git curl bc jq
+          sudo apt-get install -y qemu-user-static qemu-utils
+      # Checkout the latest pi-gen repo code
+      - name: Checkout the latest pi-gen repo code
+        run: |
+          git clone https://github.com/RPi-Distro/pi-gen.git
+          pushd pi-gen
+          pwd
+          ls -al
+          popd
+
+      # Copy picroft image build config to pi-gen working dir
+      - name: Copy picroft image build config to pi-gen working dir
+        run: cp ./config ./pi-gen/config
+
+      # Copy picroft stage script to pi-gen working dir
+      - name: Copy picroft stage script to pi-gen working dir
+        run: |
+          find ./pi-gen-stage-picroft -name "*.sh" -exec chmod +x {} \;
+          cp -R ./pi-gen-stage-picroft ./pi-gen/
+          ls -al ./pi-gen
+
+      # Mark stage2 image to be skipped for faster build
+      - name: Skip stage2 image - Standard Raspbian OS Lite
+        run: |
+          touch ./pi-gen/stage2/SKIP_IMAGES
+
+      # Run pi-gen image build script
+      - name: Run pi-gen script
+        env:
+          CI: true
+          BRANCH: release/v21.2.1
+        run: |
+          pwd
+          ls -al
+          pushd pi-gen
+          pwd
+          ls -al
+          # sudo CLEAN=1 BUILD_VERSION=${{ steps.get_version.outputs.VERSION }} ./build.sh -c config
+          sudo -E CLEAN=1 BUILD_VERSION=${{ steps.get_version.outputs.VERSION }} IMG_NAME=picroft-${{ env.BRANCH }} ./build.sh -c config
+          popd
+
+      - name: Check prepared images
+        run: |
+          ls -al ./pi-gen/deploy
+          # check if the expected image files are there
+          test -f ./pi-gen/deploy/*.zip
+
+      - name: Zipped image checksum
+        run: sha256sum deploy/*.zip
+
+      - name: Transfer image
+        env:
+          remote_host: ${{ secrets.DEPLOY_HOST }}
+          remote_port: ${{ secrets.DEPLOY_PORT }}
+          remote_user: ${{ secrets.DEPLOY_USER }}
+          remote_key: ${{ secrets.DEPLOY_KEY }}
+          local_dir: "deploy/*.zip"
+          remote_dir: ${{ secrets.DEPLOY_DIR }}
+        run: |
+          mkdir ~/.ssh
+          echo "$remote_key" > ~/.ssh/gh_actions_key
+          chmod 600 ~/.ssh/gh_actions_key
+          rsync -avzr --delete -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}

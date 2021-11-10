@@ -1,12 +1,12 @@
-# This workflow builds, tests and releases an Picroft Stable binary image for Raspberry Pi
+# This workflow builds, tests and releases an Picroft Edge binary image for Raspberry Pi
 
 name: CI build
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the main branch
 on:
-  push:
-    branches: [ main ]
+  schedule:
+    - cron:  '0 0 * * *'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -59,7 +59,7 @@ jobs:
       - name: Run pi-gen script
         env:
           CI: true
-          BRANCH: release/v21.2.1
+          BRANCH: dev
         run: |
           pwd
           ls -al
@@ -67,7 +67,7 @@ jobs:
           pwd
           ls -al
           # sudo CLEAN=1 BUILD_VERSION=${{ steps.get_version.outputs.VERSION }} ./build.sh -c config
-          sudo CLEAN=1 BUILD_VERSION=${{ steps.get_version.outputs.VERSION }} ./build.sh -c config
+          sudo -E CLEAN=1 BUILD_VERSION=${{ steps.get_version.outputs.VERSION }} IMG_NAME=picroft-${{ env.BRANCH }} ./build.sh -c config
           popd
 
       - name: Check prepared images
@@ -75,3 +75,20 @@ jobs:
           ls -al ./pi-gen/deploy
           # check if the expected image files are there
           test -f ./pi-gen/deploy/*.zip
+
+      - name: Zipped image checksum
+        run: sha256sum deploy/*.zip
+
+      - name: Transfer image
+        env:
+          remote_host: ${{ secrets.DEPLOY_HOST }}
+          remote_port: ${{ secrets.DEPLOY_PORT }}
+          remote_user: ${{ secrets.DEPLOY_USER }}
+          remote_key: ${{ secrets.DEPLOY_KEY }}
+          local_dir: "deploy/*.zip"
+          remote_dir: ${{ secrets.DEPLOY_DIR }}
+        run: |
+          mkdir ~/.ssh
+          echo "$remote_key" > ~/.ssh/gh_actions_key
+          chmod 600 ~/.ssh/gh_actions_key
+          rsync -avzr --delete -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
