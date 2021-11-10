@@ -77,7 +77,7 @@ jobs:
           test -f ./pi-gen/deploy/*.zip
 
       - name: Zipped image checksum
-        run: sha256sum deploy/*.zip
+        run: sha256sum ./pi-gen/deploy/*.zip
 
       - name: Transfer image
         env:
@@ -85,7 +85,7 @@ jobs:
           remote_port: ${{ secrets.DEPLOY_PORT }}
           remote_user: ${{ secrets.DEPLOY_USER }}
           remote_key: ${{ secrets.DEPLOY_KEY }}
-          local_dir: "deploy/*.zip"
+          local_dir: "./pi-gen/deploy/*.zip"
           remote_dir: ${{ secrets.DEPLOY_DIR }}
         run: |
           mkdir ~/.ssh
