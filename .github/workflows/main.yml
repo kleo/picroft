@@ -1,4 +1,4 @@
-# This workflow builds, tests and releases an Ambianic Edge binary image for Raspberry Pi
+# This workflow builds, tests and releases an Picroft Stable binary image for Raspberry Pi
 
 name: CI build
 
@@ -7,15 +7,13 @@ name: CI build
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # Build binary images
   build:
     name: Build and test
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     # Skip build if the commit message includes the string '[skip ci]'
     if: "! contains(github.event.head_commit.message, '[skip ci]')"
     steps:
@@ -38,20 +36,20 @@ jobs:
           git clone https://github.com/RPi-Distro/pi-gen.git
           pushd pi-gen
           pwd
-          ls -al          
+          ls -al
           popd
 
-      # Copy ambianic image build config to pi-gen working dir
-      - name: Copy ambianic image build config to pi-gen working dir
+      # Copy picroft image build config to pi-gen working dir
+      - name: Copy picroft image build config to pi-gen working dir
         run: cp ./config ./pi-gen/config
 
-      # Copy WiFi Connect stage script to pi-gen working dir
-      - name: Copy WiFi Connect stage script to pi-gen working dir
+      # Copy picroft stage script to pi-gen working dir
+      - name: Copy picroft stage script to pi-gen working dir
         run: |
-          find ./pi-gen-stage-ambianic -name "*.sh" -exec chmod +x {} \;
-          cp -R ./pi-gen-stage-ambianic ./pi-gen/
+          find ./pi-gen-stage-picroft -name "*.sh" -exec chmod +x {} \;
+          cp -R ./pi-gen-stage-picroft ./pi-gen/
           ls -al ./pi-gen
-          
+
       # Mark stage2 image to be skipped for faster build
       - name: Skip stage2 image - Standard Raspbian OS Lite
         run: |
@@ -59,9 +57,12 @@ jobs:
 
       # Run pi-gen image build script
       - name: Run pi-gen script
+        env:
+          CI: true
+          BRANCH: release/v21.2.1
         run: |
           pwd
-          ls -al          
+          ls -al
           pushd pi-gen
           pwd
           ls -al
@@ -73,59 +74,4 @@ jobs:
         run: |
           ls -al ./pi-gen/deploy
           # check if the expected image files are there
-          test -f ./pi-gen/deploy/*ambianic_edge-rpi.zip
-
-      - name: Upload artifacts for release job
-        uses: actions/upload-artifact@v2
-        with:
-          name: deploy
-          path: |
-            ./pi-gen/deploy
-
-  # Release and publish image
-  release:
-    name: Release a new image
-    needs: build
-    runs-on: ubuntu-latest
-    # trigger a release only when there is a direct commit or PR merge on the master branch
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    steps:
-      - name: Checkout
-        # checkout repo to access custom semantic release scripts
-        uses: actions/checkout@v2
-      - name: Download deploy artifacts from build job
-        uses: actions/download-artifact@v2
-        with:
-          name: deploy
-#          path: ./ambianic-rpi-image/
-      - name: List checkout and deployment artifacts
-        run: |
-          pwd
-          ls -alR
-      - name: Semantic Release
-        id: semrel
-        uses: cycjimmy/semantic-release-action@v2
-        with:
-          # You can specify specifying version range for the extra plugins if you prefer.
-          extra_plugins: |
-            @semantic-release/changelog
-            @semantic-release/git        
-          branches: |    
-            [
-              'main', 
-            ]
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Log new release info
-        if: steps.semrel.outputs.new_release_published == 'true'
-        run: |
-          echo ${{ steps.semrel.outputs.new_release_version }}
-          echo ${{ steps.semrel.outputs.new_release_major_version }}
-          echo ${{ steps.semrel.outputs.new_release_minor_version }}
-          echo ${{ steps.semrel.outputs.new_release_patch_version }}
-      - name: Finalizing run
-        run: |
-          echo Finishing pi-gen script...
-          echo Ambianic Edge rpi image build finished successfully!
-  
+          test -f ./pi-gen/deploy/*.zip
