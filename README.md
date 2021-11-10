@@ -1,6 +1,6 @@
 # Picroft
 
-Unofficial Mycroft AI Raspberry Pi OS image builder. 
+Unofficial [Mycroft AI](https://github.com/MycroftAI) Raspberry Pi OS image builder. 
 
 ## Building  
 
