@@ -67,7 +67,7 @@ jobs:
           pwd
           ls -al
           # sudo CLEAN=1 BUILD_VERSION=${{ steps.get_version.outputs.VERSION }} ./build.sh -c config
-          sudo -E CLEAN=1 BUILD_VERSION=${{ steps.get_version.outputs.VERSION }} IMG_NAME=picroft-${{ env.BRANCH }} ./build.sh -c config
+          sudo -E CLEAN=1 BUILD_VERSION=${{ steps.get_version.outputs.VERSION }} IMG_NAME=picroft-stable ./build.sh -c config
           popd
 
       - name: Check prepared images
