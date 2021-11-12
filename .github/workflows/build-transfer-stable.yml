@@ -75,7 +75,9 @@ jobs:
           ls -al ./pi-gen/deploy
           # check if the expected image files are there
           test -f ./pi-gen/deploy/*.zip
-          sha256sum ./pi-gen/deploy/*.zip
+
+      - name: Zipped image checksum
+        run: sha256sum ./pi-gen/deploy/*.zip   
 
       # - name: Transfer image
       #   env:
