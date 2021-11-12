@@ -33,7 +33,7 @@ jobs:
       # Checkout the latest pi-gen repo code
       - name: Checkout the latest pi-gen repo code
         run: |
-          git clone https://github.com/RPi-Distro/pi-gen.git
+          git clone --depth 1 --branch 2021-10-30-raspios-bullseye https://github.com/RPi-Distro/pi-gen.git
           pushd pi-gen
           pwd
           ls -al
