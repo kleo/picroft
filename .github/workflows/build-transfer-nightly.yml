@@ -1,6 +1,6 @@
 # This workflow builds, tests and releases an Picroft Nightly binary image for Raspberry Pi
 
-name: Build Picroft Nightly
+name: 'build: picroft nightly'
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the main branch
