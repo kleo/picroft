@@ -80,16 +80,16 @@ jobs:
           test -f ./pi-gen/deploy/*.zip
           sha256sum ./pi-gen/deploy/*.zip
 
-      - name: Transfer image
-        env:
-          remote_host: ${{ secrets.DEPLOY_HOST }}
-          remote_port: ${{ secrets.DEPLOY_PORT }}
-          remote_user: ${{ secrets.DEPLOY_USER }}
-          remote_key: ${{ secrets.DEPLOY_KEY }}
-          local_dir: "./pi-gen/deploy/*.zip"
-          remote_dir: ${{ secrets.DEPLOY_DIR }}
-        run: |
-          mkdir ~/.ssh
-          echo "$remote_key" > ~/.ssh/gh_actions_key
-          chmod 600 ~/.ssh/gh_actions_key
-          rsync -avzrh --progress --delete -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
+      # - name: Transfer image
+      #   env:
+      #     remote_host: ${{ secrets.DEPLOY_HOST }}
+      #     remote_port: ${{ secrets.DEPLOY_PORT }}
+      #     remote_user: ${{ secrets.DEPLOY_USER }}
+      #     remote_key: ${{ secrets.DEPLOY_KEY }}
+      #     local_dir: "./pi-gen/deploy/*.zip"
+      #     remote_dir: ${{ secrets.DEPLOY_DIR }}
+      #   run: |
+      #     mkdir ~/.ssh
+      #     echo "$remote_key" > ~/.ssh/gh_actions_key
+      #     chmod 600 ~/.ssh/gh_actions_key
+      #     rsync -avzrh --progress --delete -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
