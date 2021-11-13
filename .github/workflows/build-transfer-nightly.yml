@@ -34,7 +34,7 @@ jobs:
           sudo apt-get install -y coreutils quilt parted debootstrap zerofree zip dosfstools libarchive-tools libcap2-bin grep rsync xz-utils file git curl bc jq
           sudo apt-get install -y qemu-user-static qemu-utils
       # Checkout the latest pi-gen repo code
-      - name: Checkout the latest pi-gen repo code
+      - name: Checkout the latest release pi-gen repo code
         run: |
           git clone --depth 1 --branch 2021-10-30-raspios-bullseye https://github.com/RPi-Distro/pi-gen.git
           pushd pi-gen
@@ -69,7 +69,6 @@ jobs:
           pushd pi-gen
           pwd
           ls -al
-          # sudo CLEAN=1 BUILD_VERSION=${{ steps.get_version.outputs.VERSION }} ./build.sh -c config
           sudo -E CLEAN=1 BUILD_VERSION=${{ steps.get_version.outputs.VERSION }} IMG_NAME=picroft-nightly ./build.sh -c config
           popd
 
@@ -82,16 +81,16 @@ jobs:
       - name: Zipped image checksum
         run: sha256sum ./pi-gen/deploy/*.zip   
           
-      # - name: Transfer image
-      #   env:
-      #     remote_host: ${{ secrets.DEPLOY_HOST }}
-      #     remote_port: ${{ secrets.DEPLOY_PORT }}
-      #     remote_user: ${{ secrets.DEPLOY_USER }}
-      #     remote_key: ${{ secrets.DEPLOY_KEY }}
-      #     local_dir: "./pi-gen/deploy/*.zip"
-      #     remote_dir: ${{ secrets.DEPLOY_DIR }}
-      #   run: |
-      #     mkdir ~/.ssh
-      #     echo "$remote_key" > ~/.ssh/gh_actions_key
-      #     chmod 600 ~/.ssh/gh_actions_key
-      #     rsync -avzrh --progress --delete -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
+      - name: Transfer image
+        env:
+          remote_host: ${{ secrets.DEPLOY_HOST }}
+          remote_port: ${{ secrets.DEPLOY_PORT }}
+          remote_user: ${{ secrets.DEPLOY_USER }}
+          remote_key: ${{ secrets.DEPLOY_KEY }}
+          local_dir: "./pi-gen/deploy/*.zip"
+          remote_dir: ${{ secrets.DEPLOY_DIR }}
+        run: |
+          mkdir ~/.ssh
+          echo "$remote_key" > ~/.ssh/gh_actions_key
+          chmod 600 ~/.ssh/gh_actions_key
+          rsync -avzrh --progress --delete -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
