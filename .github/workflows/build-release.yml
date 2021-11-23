@@ -59,11 +59,6 @@ jobs:
         run: |
           touch ./pi-gen/stage2/SKIP_IMAGES
 
-      - name: Omit image prefix on build.sh
-        run: |
-          ls -al ./pi-gen/build.sh
-          sed -i 's/image_//g' ./pi-gen/build.sh
-
       - name: Get mycroft-core latest release
         run: echo "BRANCH=`curl -sL https://api.github.com/repos/MycroftAI/mycroft-core/releases/latest | jq -r '.tag_name'`" >> $GITHUB_ENV
 
@@ -77,6 +72,7 @@ jobs:
           pushd pi-gen
           pwd
           git checkout tags/2021-05-07-raspbian-buster
+          sed -i 's/image_//g' ./pi-gen/build.sh
           ls -al
           sudo -E CLEAN=1 IMG_NAME=picroft-stable-`echo ${{ env.BRANCH }} | sed 's/release\///g'` ./build.sh -c config
           popd
