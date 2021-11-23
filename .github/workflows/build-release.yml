@@ -37,7 +37,7 @@ jobs:
       # Checkout the latest pi-gen repo code
       - name: Checkout the latest release pi-gen repo code
         run: |
-          git clone --depth 1 --branch 2021-10-30-raspios-bullseye https://github.com/RPi-Distro/pi-gen.git
+          git clone https://github.com/RPi-Distro/pi-gen.git
           pushd pi-gen
           pwd
           ls -al
@@ -64,44 +64,50 @@ jobs:
           ls -al ./pi-gen/build.sh
           sed -i 's/image_//g' ./pi-gen/build.sh
 
+      - name: Get mycroft-core latest release
+        run: echo "BRANCH=`curl -sL https://api.github.com/repos/MycroftAI/mycroft-core/releases/latest | jq -r '.tag_name'`" >> $GITHUB_ENV
+
       # Run pi-gen image build script
       - name: Build picroft stable
         env:
           CI: true
-          BRANCH: release/v21.2.1
         run: |
           pwd
           ls -al
           pushd pi-gen
           pwd
+          git checkout tags/2021-05-07-raspbian-buster
           ls -al
-          sudo -E CLEAN=1 BUILD_VERSION=${{ steps.get_version.outputs.VERSION }} IMG_NAME=picroft-stable ./build.sh -c config
+          sudo -E CLEAN=1 IMG_NAME=picroft-stable-`echo ${{ env.BRANCH }} | sed 's/release\///g'` ./build.sh -c config
           popd
 
       - name: Check prepared images
         run: |
           ls -al ./pi-gen/deploy
           # check if the expected image files are there
-          test -f ./pi-gen/deploy/*-picroft-stable.zip
+          test -f ./pi-gen/deploy/picroft-stable-*
 
+      - name: Get mycroft-core latest dev commit
+        run: echo "BRANCH=`curl -sL https://api.github.com/repos/MycroftAI/mycroft-core/commits/dev | jq -r '.sha' | cut -c1-7`" >> $GITHUB_ENV
+    
       - name: Build picroft nightly
         env:
           CI: true
-          BRANCH: dev
         run: |
           pwd
           ls -al
           pushd pi-gen
           pwd
+          git checkout tags/2021-05-07-raspbian-buster
           ls -al
-          sudo -E CLEAN=1 BUILD_VERSION=${{ steps.get_version.outputs.VERSION }} IMG_NAME=picroft-nightly ./build.sh -c config
+          sudo -E CLEAN=1 IMG_NAME=picroft-nightly-${{ env.BRANCH }} ./build.sh -c config
           popd
 
       - name: Check prepared images
         run: |
           ls -al ./pi-gen/deploy
           # check if the expected image files are there
-          test -f ./pi-gen/deploy/*-picroft-nightly.zip
+          test -f ./pi-gen/deploy/picroft-nightly-*
 
       - name: Zipped image checksum
         run: sha256sum ./pi-gen/deploy/*.zip     
