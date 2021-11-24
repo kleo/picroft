@@ -71,7 +71,7 @@ jobs:
           ls -al
           pushd pi-gen
           pwd
-          git checkout tags/2021-05-07-raspbian-buster
+          git checkout tags/2021-10-30-raspios-bullseye
           sed -i 's/image_//g' ./build.sh
           ls -al
           sudo -E CLEAN=1 IMG_NAME=picroft-stable-`echo ${{ env.BRANCH }} | sed 's/release\///g'` ./build.sh -c config
