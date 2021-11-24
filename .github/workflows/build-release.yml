@@ -83,12 +83,10 @@ jobs:
           # check if the expected image files are there
           test -f ./pi-gen/deploy/picroft-stable-*
 
-      - name: Get mycroft-core latest dev commit
-        run: echo "BRANCH=`curl -sL https://api.github.com/repos/MycroftAI/mycroft-core/commits/dev | jq -r '.sha' | cut -c1-7`" >> $GITHUB_ENV
-    
       - name: Build picroft nightly
         env:
           CI: true
+          BRANCH: dev
         run: |
           pwd
           ls -al

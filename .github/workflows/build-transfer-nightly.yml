@@ -58,13 +58,11 @@ jobs:
         run: |
           touch ./pi-gen/stage2/SKIP_IMAGES
 
-      - name: Get mycroft-core latest dev commit
-        run: echo "BRANCH=`curl -sL https://api.github.com/repos/MycroftAI/mycroft-core/commits/dev | jq -r '.sha' | cut -c1-7`" >> $GITHUB_ENV
-
       # Run pi-gen image build script
       - name: Run pi-gen script
         env:
           CI: true
+          BRANCH: dev
         run: |
           pwd
           ls -al
