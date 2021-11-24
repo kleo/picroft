@@ -77,8 +77,6 @@ jobs:
       - name: Check prepared images
         run: |
           ls -al ./pi-gen/deploy
-          # check if the expected image files are there
-          test -f ./pi-gen/deploy/picroft-stable-*
 
       - name: Build picroft nightly
         env:
@@ -97,8 +95,6 @@ jobs:
       - name: Check prepared images
         run: |
           ls -al ./pi-gen/deploy
-          # check if the expected image files are there
-          test -f ./pi-gen/deploy/picroft-nightly-*
 
       - name: Zipped image checksum
         run: sha256sum ./pi-gen/deploy/*.zip     
