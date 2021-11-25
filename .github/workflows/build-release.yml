@@ -87,7 +87,6 @@ jobs:
           ls -al
           pushd pi-gen
           pwd
-          git checkout tags/2021-05-07-raspbian-buster
           ls -al
           sudo -E CLEAN=1 IMG_NAME=picroft-nightly-${{ env.BRANCH }} ./build.sh -c config
           popd
