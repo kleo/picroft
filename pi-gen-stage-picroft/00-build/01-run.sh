@@ -6,6 +6,7 @@ mkdir -pv ${ROOTFS_DIR}/etc/mycroft
 curl -L -o ${ROOTFS_DIR}/etc/mycroft/mycroft.conf https://raw.githubusercontent.com/MycroftAI/enclosure-picroft/buster/etc/mycroft/mycroft.conf
 install -d -m 0755 "${ROOTFS_DIR}/etc/mycroft"
 install -m 0644 "files/etc/mycroft/mycroft.conf" "${ROOTFS_DIR}/etc/mycroft/mycroft.conf"
+install -v -m 0644 files/etc/systemd/system/getty@tty1.service.d/autologin.conf "${ROOTFS_DIR}/etc/systemd/system/getty@tty1.service.d/autologin.conf"
 
 install -m 0644 -o "${FIRST_USER_NAME}" "files/home/pi/.bashrc" "${ROOTFS_DIR}/home/pi/.bashrc"
 install -m 0644 -o "${FIRST_USER_NAME}" "files/home/pi/AIY-asound.conf" "${ROOTFS_DIR}/home/pi/AIY-asound.conf"
