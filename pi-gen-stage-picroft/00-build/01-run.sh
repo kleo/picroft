@@ -12,18 +12,21 @@ install -v -m 0644 files/etc/systemd/system/getty@tty1.service.d/autologin.conf 
 install -v -d -m 0755 "${ROOTFS_DIR}/etc/mycroft"
 install -v -m 0644 files/etc/mycroft/mycroft.conf "${ROOTFS_DIR}/etc/mycroft/mycroft.conf"
 
-install -v -m 0644 -o "${FIRST_USER_NAME}" files/home/pi/.bashrc "${ROOTFS_DIR}/home/pi/.bashrc"
-install -v -m 0644 -o "${FIRST_USER_NAME}" files/home/pi/AIY-asound.conf "${ROOTFS_DIR}/home/pi/AIY-asound.conf"
-install -v -m 0644 -o "${FIRST_USER_NAME}" files/home/pi/version "${ROOTFS_DIR}/home/pi/version"
+install -v -m 0644 files/home/pi/.bashrc "${ROOTFS_DIR}/home/pi/.bashrc"
+install -v -m 0644 files/home/pi/AIY-asound.conf "${ROOTFS_DIR}/home/pi/AIY-asound.conf"
+install -v -m 0644 files/home/pi/version "${ROOTFS_DIR}/home/pi/version"
 
-install -v -m 0755 -o "${FIRST_USER_NAME}" files/home/pi/audio_setup.sh "${ROOTFS_DIR}/home/pi/audio_setup.sh"
-install -v -m 0755 -o "${FIRST_USER_NAME}" files/home/pi/auto_run.sh "${ROOTFS_DIR}/home/pi/auto_run.sh"
-install -v -m 0755 -o "${FIRST_USER_NAME}" files/home/pi/custom_setup.sh "${ROOTFS_DIR}/home/pi/custom_setup.sh"
-install -v -m 0755 -o "${FIRST_USER_NAME}" files/home/pi/update.sh "${ROOTFS_DIR}/home/pi/update.sh"
+install -v -m 0755 files/home/pi/audio_setup.sh "${ROOTFS_DIR}/home/pi/audio_setup.sh"
+install -v -m 0755 files/home/pi/auto_run.sh "${ROOTFS_DIR}/home/pi/auto_run.sh"
+install -v -m 0755 files/home/pi/custom_setup.sh "${ROOTFS_DIR}/home/pi/custom_setup.sh"
+install -v -m 0755 files/home/pi/update.sh "${ROOTFS_DIR}/home/pi/update.sh"
 
-install -v -d -m 0755 -o "${FIRST_USER_NAME}" "${ROOTFS_DIR}/home/pi/bin"
-install -v -m 0755 -o "${FIRST_USER_NAME}" files/home/pi/bin/mycroft-setup-wizard "${ROOTFS_DIR}/home/pi/bin/mycroft-setup-wizard"
-install -v -m 0755 -o "${FIRST_USER_NAME}" files/home/pi/bin/mycroft-wipe "${ROOTFS_DIR}/home/pi/bin/mycroft-wipe"
+install -v -d -m 0755 "${ROOTFS_DIR}/home/pi/bin"
+install -v -m 0755 files/home/pi/bin/mycroft-setup-wizard "${ROOTFS_DIR}/home/pi/bin/mycroft-setup-wizard"
+install -v -m 0755 files/home/pi/bin/mycroft-wipe "${ROOTFS_DIR}/home/pi/bin/mycroft-wipe"
+
+chown -Rv "pi:pi" "${ROOTFS_DIR}/home/pi"
+chmod -Rv +x ${ROOTFS_DIR}/home/pi/*.sh
 
 # clone mycroft and build
 on_chroot << EOF
