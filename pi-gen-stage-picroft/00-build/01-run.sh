@@ -2,15 +2,13 @@
 
 set -exu
 
-mkdir -pv ${ROOTFS_DIR}/etc/mycroft
-curl -L -o ${ROOTFS_DIR}/etc/mycroft/mycroft.conf https://raw.githubusercontent.com/MycroftAI/enclosure-picroft/buster/etc/mycroft/mycroft.conf
-install -d -m 0755 "${ROOTFS_DIR}/etc/mycroft"
-install -m 0644 "files/etc/mycroft/mycroft.conf" "${ROOTFS_DIR}/etc/mycroft/mycroft.conf"
+# create ramdisk
+echo "tmpfs /ramdisk tmpfs rw,nodev,nosuid,size=20M 0 0" >> "${ROOTFS_DIR}/etc/fstab"
+
+# console auto login
 install -v -m 0644 files/etc/systemd/system/getty@tty1.service.d/autologin.conf "${ROOTFS_DIR}/etc/systemd/system/getty@tty1.service.d/autologin.conf"
 
-install -m 0644 -o "${FIRST_USER_NAME}" "files/home/pi/.bashrc" "${ROOTFS_DIR}/home/pi/.bashrc"
-install -m 0644 -o "${FIRST_USER_NAME}" "files/home/pi/AIY-asound.conf" "${ROOTFS_DIR}/home/pi/AIY-asound.conf"
-install -m 0644 -o "${FIRST_USER_NAME}" "files/home/pi/version" "${ROOTFS_DIR}/home/pi/version"
+# install recipe files
 install -v -d -m 0755 "${ROOTFS_DIR}/etc/mycroft"
 install -v -m 0644 files/etc/mycroft/mycroft.conf "${ROOTFS_DIR}/etc/mycroft/mycroft.conf"
 
@@ -27,6 +25,7 @@ install -v -d -m 0755 -o "${FIRST_USER_NAME}" "${ROOTFS_DIR}/home/pi/bin"
 install -v -m 0755 -o "${FIRST_USER_NAME}" files/home/pi/bin/mycroft-setup-wizard "${ROOTFS_DIR}/home/pi/bin/mycroft-setup-wizard"
 install -v -m 0755 -o "${FIRST_USER_NAME}" files/home/pi/bin/mycroft-wipe "${ROOTFS_DIR}/home/pi/bin/mycroft-wipe"
 
+# clone mycroft and build
 on_chroot << EOF
 sudo -u pi -E git clone --verbose --progress --depth 1 --branch ${BRANCH} https://github.com/MycroftAI/mycroft-core /home/pi/mycroft-core
 sudo -u pi -E bash /home/pi/mycroft-core/dev_setup.sh
