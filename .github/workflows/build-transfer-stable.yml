@@ -79,11 +79,26 @@ jobs:
       - name: Check prepared images
         run: |
           ls -al ./pi-gen/deploy
-          # check if the expected image files are there
-          test -f ./pi-gen/deploy/*.zip
+
+      - name: Build picroft stable arm64
+        env:
+          CI: true  
+        run: |
+          pwd
+          ls -al
+          pushd pi-gen
+          pwd
+          git checkout -b arm64
+          ls -al
+          sudo -E CLEAN=1 IMG_NAME=picroft-stable-arm64-`echo ${{ env.BRANCH }} | sed 's/release\///g'` ./build.sh -c config
+          popd
+        
+      - name: Check prepared images
+        run: |
+          ls -al ./pi-gen/deploy
 
       - name: Zipped image checksum
-        run: sha256sum ./pi-gen/deploy/*.zip   
+        run: sha256sum ./pi-gen/deploy/*.zip | tee -a sha256sums
 
       - name: Transfer image
         env:
@@ -91,7 +106,7 @@ jobs:
           remote_port: ${{ secrets.DEPLOY_PORT }}
           remote_user: ${{ secrets.DEPLOY_USER }}
           remote_key: ${{ secrets.DEPLOY_KEY }}
-          local_dir: "./pi-gen/deploy/*.zip"
+          local_dir: "./pi-gen/deploy/*.zip ./pi-gen/deploy/sha256sums"
           remote_dir: ${{ secrets.DEPLOY_DIR }}
         run: |
           mkdir ~/.ssh
