@@ -15,18 +15,14 @@ on:
 jobs:
   # Build binary images
   build:
-    name: Build and test
+    name: picroft nightly
     runs-on: ubuntu-latest
     # Skip build if the commit message includes the string '[skip ci]'
     if: "! contains(github.event.head_commit.message, '[skip ci]')"
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: Get the version (git tag)
-        id: get_version
-        run: |
-          echo ${GITHUB_REF/refs\/tags\//}
-          echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
       - name: Install pi-gen required dependencies
         run: |
           sudo dpkg --add-architecture i386
@@ -69,6 +65,7 @@ jobs:
           pushd pi-gen
           pwd
           git checkout tags/2021-10-30-raspios-bullseye
+          # omit image prefix
           sed -i 's/image_//g' ./build.sh
           ls -al
           sudo -E CLEAN=1 IMG_NAME=picroft-nightly-${{ env.BRANCH }} ./build.sh -c config
@@ -78,27 +75,9 @@ jobs:
         run: |
           ls -al ./pi-gen/deploy
 
-      - name: Build picroft nightly arm64
-        env:
-          CI: true 
-          BRANCH: dev 
-        run: |
-          pwd
-          ls -al
-          pushd pi-gen
-          pwd
-          git checkout -b arm64
-          ls -al
-          sudo -E CLEAN=1 IMG_NAME=picroft-nightly-arm64-`echo ${{ env.BRANCH }} | sed 's/release\///g'` ./build.sh -c config
-          popd
-        
-      - name: Check prepared images
-        run: |
-          ls -al ./pi-gen/deploy
-
       - name: Zipped image checksum
         run: |
-          sha256sum ./pi-gen/deploy/*.zip | tee -a sha256sums 
+          sha256sum ./pi-gen/deploy/*.zip | tee -a `date -I`-picroft-nightly-${{ env.BRANCH }}.sha256
           ls -al
           
       - name: Transfer image
@@ -107,7 +86,7 @@ jobs:
           remote_port: ${{ secrets.DEPLOY_PORT }}
           remote_user: ${{ secrets.DEPLOY_USER }}
           remote_key: ${{ secrets.DEPLOY_KEY }}
-          local_dir: "./pi-gen/deploy/*.zip ./sha256sums"
+          local_dir: "./pi-gen/deploy/*.zip ./*.sha256"
           remote_dir: ${{ secrets.DEPLOY_DIR }}
         run: |
           mkdir ~/.ssh
