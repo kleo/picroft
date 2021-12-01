@@ -97,7 +97,9 @@ jobs:
           ls -al ./pi-gen/deploy
 
       - name: Zipped image checksum
-        run: sha256sum ./pi-gen/deploy/*.zip | tee -a sha256sums 
+        run: |
+          sha256sum ./pi-gen/deploy/*.zip | tee -a sha256sums 
+          ls -al
           
       - name: Transfer image
         env:
@@ -105,7 +107,7 @@ jobs:
           remote_port: ${{ secrets.DEPLOY_PORT }}
           remote_user: ${{ secrets.DEPLOY_USER }}
           remote_key: ${{ secrets.DEPLOY_KEY }}
-          local_dir: "./pi-gen/deploy/*.zip ./pi-gen/deploy/sha256sums"
+          local_dir: "./pi-gen/deploy/*.zip ./sha256sums"
           remote_dir: ${{ secrets.DEPLOY_DIR }}
         run: |
           mkdir ~/.ssh
