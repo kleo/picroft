@@ -79,7 +79,7 @@ jobs:
 
       - name: Zipped image checksum
         run: |
-          sha256sum ./pi-gen/deploy/*.zip | tee -a `date -I`-picroft-stable-arm64-`echo ${{ env.BRANCH }} | sed 's/release\///g'`.sha256
+          sha256sum ./pi-gen/deploy/*.zip | tee -a `date -I`-picroft-stable-`echo ${{ env.BRANCH }} | sed 's/release\///g'`.sha256
           ls -al
 
       - name: Transfer image

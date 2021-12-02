@@ -76,7 +76,7 @@ jobs:
           # omit image prefix
           sed -i 's/image_//g' ./build.sh
           ls -al
-          sudo -E CLEAN=1 IMG_NAME=picroft-nightly-dev ./build.sh -c config
+          sudo -E CLEAN=1 IMG_NAME=picroft-nightly-dev-arm64 ./build.sh -c config
           popd
 
       - name: Check prepared images
@@ -85,7 +85,7 @@ jobs:
 
       - name: Zipped image checksum
         run: |
-          sha256sum ./pi-gen/deploy/*.zip | tee -a `date -I`-picroft-nightly-dev.sha256
+          sha256sum ./pi-gen/deploy/*.zip | tee -a `date -I`-picroft-nightly-dev-arm64.sha256
           ls -al
           
       - name: Transfer image
