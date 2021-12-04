@@ -79,7 +79,7 @@ jobs:
         run: |
           pushd pi-gen/deploy
           ls -al
-          sha256sum *.zip | tee -a `date -I`-picroft-nightly-dev.sha256
+          sha256sum *.zip | tee -a ~/`date -I`-picroft-nightly-dev.sha256
           ls -al
           popd
           
