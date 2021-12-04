@@ -25,6 +25,8 @@ install -v -d -m 0755 "${ROOTFS_DIR}/home/pi/bin"
 install -v -m 0755 files/home/pi/bin/mycroft-setup-wizard "${ROOTFS_DIR}/home/pi/bin/mycroft-setup-wizard"
 install -v -m 0755 files/home/pi/bin/mycroft-wipe "${ROOTFS_DIR}/home/pi/bin/mycroft-wipe"
 
+install -v -m 0644 files/etc/pip.conf "${ROOTFS_DIR}/etc/pip.conf"
+
 # clone mycroft and build
 on_chroot << EOF
 chown -Rv pi:pi /home/pi
