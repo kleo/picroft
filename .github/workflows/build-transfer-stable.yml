@@ -79,8 +79,8 @@ jobs:
           pushd pi-gen/deploy
           ls -al
           sha256sum *.zip | tee -a ~/`date -I`-picroft-stable-`echo ${{ env.BRANCH }} | sed 's/release\///g'`.sha256
-          ls -al
           popd
+          ls -al
 
       - name: Transfer image
         env:
