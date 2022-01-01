@@ -29,3 +29,4 @@ build-essential
 jq
 pulseaudio
 pulseaudio-utils
+python-pip-whl
