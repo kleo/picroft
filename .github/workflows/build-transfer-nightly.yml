@@ -1,9 +1,5 @@
-# This workflow builds, tests and releases an Picroft Nightly binary image for Raspberry Pi
-
 name: 'build: picroft nightly'
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the main branch
 on:
   push:
     branches: [ main ]
@@ -11,16 +7,13 @@ on:
   schedule:
     - cron:  '0 6 * * *'
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # Build binary images
   build-picroft-nightly:
     name: picroft nightly
     runs-on: ubuntu-latest
-    # Skip build if the commit message includes the string '[skip ci]'
     if: "! contains(github.event.head_commit.message, '[skip ci]')"
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+
       - uses: actions/checkout@v2
 
       - name: Install pi-gen required dependencies
@@ -29,7 +22,7 @@ jobs:
           sudo apt-get update --fix-missing
           sudo apt-get install -y coreutils quilt parted debootstrap zerofree zip dosfstools libarchive-tools libcap2-bin grep rsync xz-utils file git curl bc jq
           sudo apt-get install -y qemu-user-static qemu-utils
-      # Checkout the latest pi-gen repo code
+
       - name: Checkout the latest release pi-gen repo code
         run: |
           git clone https://github.com/RPi-Distro/pi-gen.git
@@ -38,23 +31,19 @@ jobs:
           ls -al
           popd
 
-      # Copy picroft image build config to pi-gen working dir
       - name: Copy picroft image build config to pi-gen working dir
         run: cp ./config ./pi-gen/config
 
-      # Copy picroft stage script to pi-gen working dir
       - name: Copy picroft stage script to pi-gen working dir
         run: |
           find ./pi-gen-stage-picroft -name "*.sh" -exec chmod +x {} \;
           cp -R ./pi-gen-stage-picroft ./pi-gen/
           ls -al ./pi-gen
 
-      # Mark stage2 image to be skipped for faster build
       - name: Skip stage2 image - Standard Raspbian OS Lite
         run: |
           touch ./pi-gen/stage2/SKIP_IMAGES
 
-      # Run pi-gen image build script
       - name: Run pi-gen script
         env:
           CI: true
@@ -97,10 +86,9 @@ jobs:
   build-picroft-nightly-arm64:
     name: picroft nightly arm64
     runs-on: ubuntu-latest
-    # Skip build if the commit message includes the string '[skip ci]'
     if: "! contains(github.event.head_commit.message, '[skip ci]')"
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+
       - uses: actions/checkout@v2
 
       - name: Set up QEMU
@@ -116,7 +104,7 @@ jobs:
           sudo apt-get update --fix-missing
           sudo apt-get install -y coreutils quilt parted debootstrap zerofree zip dosfstools libarchive-tools libcap2-bin grep rsync xz-utils file git curl bc jq
           sudo apt-get install -y qemu-user-static qemu-utils
-      # Checkout the latest pi-gen repo code
+
       - name: Checkout the latest release pi-gen repo code
         run: |
           git clone https://github.com/RPi-Distro/pi-gen.git
@@ -125,23 +113,19 @@ jobs:
           ls -al
           popd
 
-      # Copy picroft image build config to pi-gen working dir
       - name: Copy picroft image build config to pi-gen working dir
         run: cp ./config ./pi-gen/config
 
-      # Copy picroft stage script to pi-gen working dir
       - name: Copy picroft stage script to pi-gen working dir
         run: |
           find ./pi-gen-stage-picroft -name "*.sh" -exec chmod +x {} \;
           cp -R ./pi-gen-stage-picroft ./pi-gen/
           ls -al ./pi-gen
 
-      # Mark stage2 image to be skipped for faster build
       - name: Skip stage2 image - Standard Raspbian OS Lite
         run: |
           touch ./pi-gen/stage2/SKIP_IMAGES
 
-      # Run pi-gen image build script
       - name: Run pi-gen script
         env:
           CI: true
