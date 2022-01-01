@@ -72,12 +72,12 @@ jobs:
           
       - name: Transfer image
         env:
-          remote_host: ${{ secrets.DEPLOY_HOST }}
-          remote_port: ${{ secrets.DEPLOY_PORT }}
-          remote_user: ${{ secrets.DEPLOY_USER }}
-          remote_key: ${{ secrets.DEPLOY_KEY }}
+          remote_port: 22
+          remote_user: ${{ secrets.remote_user }}
+          remote_host: ${{ secrets.remote_host }}
+          remote_dir: ${{ secrets.remote_dir }}
+          remote_key: ${{ secrets.remote_key }}
           local_dir: "./pi-gen/deploy/*.zip ./*.sha256"
-          remote_dir: ${{ secrets.DEPLOY_DIR_NIGHTLY }}
         run: |
           mkdir ~/.ssh
           echo "$remote_key" > ~/.ssh/gh_actions_key
@@ -155,12 +155,12 @@ jobs:
           
       - name: Transfer image
         env:
-          remote_host: ${{ secrets.DEPLOY_HOST }}
-          remote_port: ${{ secrets.DEPLOY_PORT }}
-          remote_user: ${{ secrets.DEPLOY_USER }}
-          remote_key: ${{ secrets.DEPLOY_KEY }}
+          remote_port: 22
+          remote_user: ${{ secrets.remote_user }}
+          remote_host: ${{ secrets.remote_host }}
+          remote_dir: ${{ secrets.remote_dir_nightly }}
+          remote_key: ${{ secrets.remote_key }}
           local_dir: "./pi-gen/deploy/*.zip ./*.sha256"
-          remote_dir: ${{ secrets.DEPLOY_DIR_NIGHTLY }}
         run: |
           mkdir ~/.ssh
           echo "$remote_key" > ~/.ssh/gh_actions_key
