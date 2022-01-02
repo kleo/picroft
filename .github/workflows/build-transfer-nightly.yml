@@ -75,7 +75,7 @@ jobs:
           remote_port: 22
           remote_user: ${{ secrets.remote_user }}
           remote_host: ${{ secrets.remote_host }}
-          remote_dir: ${{ secrets.remote_dir }}
+          remote_dir: ${{ secrets.remote_dir_nightly }}
           remote_key: ${{ secrets.remote_key }}
           local_dir: "./pi-gen/deploy/*.zip ./*.sha256"
         run: |
