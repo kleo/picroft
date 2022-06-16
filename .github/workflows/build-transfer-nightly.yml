@@ -1,12 +1,8 @@
 name: 'build: picroft nightly'
 
 on:
-  push:
-    tags:
-    - "testing"
-    
-#  schedule:
-#    - cron:  '0 6 * * *'
+  schedule:
+    - cron:  '0 6 * * *'
 
 jobs:
   build-picroft-nightly:
