@@ -1,12 +1,12 @@
-name: 'build: picroft nightly'
+name: 'build: picroft weekly'
 
 on:
   schedule:
-    - cron:  '0 6 * * *'
+    - cron:  '0 6 * * 0'
 
 jobs:
-  build-picroft-nightly:
-    name: picroft nightly
+  build-picroft-weekly:
+    name: picroft weekly
     runs-on: ubuntu-latest
     if: "! contains(github.event.head_commit.message, '[skip ci]')"
     steps:
@@ -54,7 +54,7 @@ jobs:
           # omit image prefix
           sed -i 's/image_//g' ./build.sh
           ls -al
-          sudo -E CLEAN=1 IMG_NAME=picroft-nightly-dev ./build.sh -c config
+          sudo -E CLEAN=1 IMG_NAME=picroft-weekly-dev ./build.sh -c config
           popd
 
       - name: Check prepared images
@@ -63,7 +63,7 @@ jobs:
 
       - name: Zipped image checksum
         run: |
-          sha256sum ./pi-gen/deploy/*.zip | tee -a `date -I`-picroft-nightly-dev.sha256
+          sha256sum ./pi-gen/deploy/*.zip | tee -a `date -I`-picroft-weekly-dev.sha256
           ls -al
           
       - name: Transfer image
@@ -71,7 +71,7 @@ jobs:
           remote_port: 22
           remote_user: ${{ secrets.remote_user }}
           remote_host: ${{ secrets.remote_host }}
-          remote_dir: ${{ secrets.remote_dir_nightly }}
+          remote_dir: ${{ secrets.remote_dir_weekly }}
           remote_key: ${{ secrets.remote_key }}
           local_dir: "./pi-gen/deploy/*.zip ./*.sha256"
         run: |
@@ -80,8 +80,8 @@ jobs:
           chmod 600 ~/.ssh/gh_actions_key
           rsync -avzrh --progress --delete -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no -o LogLevel=ERROR" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
     
-  build-picroft-nightly-arm64:
-    name: picroft nightly arm64
+  build-picroft-weekly-arm64:
+    name: picroft weekly arm64
     runs-on: ubuntu-latest
     if: "! contains(github.event.head_commit.message, '[skip ci]')"
     steps:
@@ -137,7 +137,7 @@ jobs:
           # omit image prefix
           sed -i 's/image_//g' ./build.sh
           ls -al
-          sudo -E CLEAN=1 IMG_NAME=picroft-nightly-dev-arm64 ./build.sh -c config
+          sudo -E CLEAN=1 IMG_NAME=picroft-weekly-dev-arm64 ./build.sh -c config
           popd
 
       - name: Check prepared images
@@ -146,7 +146,7 @@ jobs:
 
       - name: Zipped image checksum
         run: |
-          sha256sum ./pi-gen/deploy/*.zip | tee -a `date -I`-picroft-nightly-dev-arm64.sha256
+          sha256sum ./pi-gen/deploy/*.zip | tee -a `date -I`-picroft-weekly-dev-arm64.sha256
           ls -al
           
       - name: Transfer image
@@ -154,7 +154,7 @@ jobs:
           remote_port: 22
           remote_user: ${{ secrets.remote_user }}
           remote_host: ${{ secrets.remote_host }}
-          remote_dir: ${{ secrets.remote_dir_nightly }}
+          remote_dir: ${{ secrets.remote_dir_weekly }}
           remote_key: ${{ secrets.remote_key }}
           local_dir: "./pi-gen/deploy/*.zip ./*.sha256"
         run: |

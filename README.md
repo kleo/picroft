@@ -2,7 +2,7 @@
 
 Unofficial [Mycroft AI](https://github.com/MycroftAI) Raspberry Pi OS image builder. 
 
-Stable and nightly builds can be found at [sourceforge.net/projects/picroft/files](https://sourceforge.net/projects/picroft/files)
+Stable and weekly builds can be found at [sourceforge.net/projects/picroft/files](https://sourceforge.net/projects/picroft/files)
 
 ## Building  
 
