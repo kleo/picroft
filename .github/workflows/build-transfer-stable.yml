@@ -53,7 +53,7 @@ jobs:
           ls -al
           pushd pi-gen
           pwd
-          git checkout tags/2022-04-04-raspios-bullseye
+          git checkout tags/2022-09-06-raspios-bullseye
           # omit image prefix
           sed -i 's/image_//g' ./build.sh
           ls -al
@@ -137,8 +137,8 @@ jobs:
           ls -al
           pushd pi-gen
           pwd
-          # checkout arm64 branch of 2021-10-30-raspios-bullseye pi-gen release tag
-          git checkout c12b1df4ed6416fb0df33ba1731c5b13c1bdbdf8
+          # checkout arm64 branch of 2022-09-06-raspios-bullseye pi-gen release tag
+          git checkout 827affcc11aaf7aa577d15daf02fb40b64392380
           # omit image prefix
           sed -i 's/image_//g' ./build.sh 
           ls -al
