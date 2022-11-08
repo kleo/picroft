@@ -8,4 +8,4 @@ STAGE_LIST="stage0 stage1 stage2 pi-gen-stage-picroft"
 USE_QCOW2=0
 DEPLOY_ZIP=1
 FIRST_USER_PASS="mycroft"
-WPA_COUNTRY="us"
+WPA_COUNTRY="US"
