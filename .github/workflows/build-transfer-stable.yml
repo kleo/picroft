@@ -12,7 +12,7 @@ jobs:
     if: "! contains(github.event.head_commit.message, '[skip ci]')"
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install pi-gen required dependencies
         run: |
@@ -89,7 +89,7 @@ jobs:
     if: "! contains(github.event.head_commit.message, '[skip ci]')"
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up QEMU
         id: qemu
